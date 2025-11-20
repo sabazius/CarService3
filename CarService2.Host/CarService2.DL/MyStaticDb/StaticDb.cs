@@ -1,6 +1,6 @@
-﻿using CarService2.Models.Entities;
+﻿using CarService3.Models.Entities;
 
-namespace CarService2.DL.MyStaticDb
+namespace CarService3.DL.MyStaticDb
 {
     internal static class StaticDb
     {
