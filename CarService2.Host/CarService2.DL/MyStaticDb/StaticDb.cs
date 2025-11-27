@@ -1,6 +1,6 @@
-﻿using CarService2.Models.Entities;
+﻿using CarService3.Models.Entities;
 
-namespace CarService2.DL.MyStaticDb
+namespace CarService3.DL.MyStaticDb
 {
     internal static class StaticDb
     {
@@ -17,6 +17,22 @@ namespace CarService2.DL.MyStaticDb
                 Id = 2,
                 Name = "Jane Smith",
                 Email = "js@xxx.com"
+            }
+        };
+
+        internal static List<Car> Cars { get; set; } = new List<Car>()
+        {
+            new Car()
+            {
+                Id = Guid.NewGuid(),
+                Model = "Toyota Camry",
+                Year = 2020
+            },
+            new Car()
+            {
+                Id = Guid.NewGuid(),
+                Model = "Honda Accord",
+                Year = 2019
             }
         };
     }

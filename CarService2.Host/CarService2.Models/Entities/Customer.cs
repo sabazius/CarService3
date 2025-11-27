@@ -1,4 +1,4 @@
-﻿namespace CarService2.Models.Entities
+﻿namespace CarService3.Models.Entities
 {
     public class Customer
     {

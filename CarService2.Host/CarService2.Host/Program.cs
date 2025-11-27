@@ -1,6 +1,9 @@
+using CarService3.BL;
+using CarService3.DL;
+using CarService3.DL.Interfaces;
 using Microsoft.OpenApi.Models;
 
-namespace CarService2.Host
+namespace CarService3.Host
 {
     public class Program
     {
@@ -9,9 +12,12 @@ namespace CarService2.Host
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services
+                .AddDataLayer()
+                .AddBusinessLogicLayer();
 
             builder.Services.AddControllers();
-
+         
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Car Service 2", Version = "v1" });
