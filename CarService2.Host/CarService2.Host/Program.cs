@@ -1,7 +1,10 @@
 using CarService3.BL;
 using CarService3.DL;
 using CarService3.DL.Interfaces;
+using Mapster;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace CarService3.Host
 {
@@ -11,10 +14,20 @@ namespace CarService3.Host
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+            .CreateLogger();
+
+            builder.Host.UseSerilog();
+
             // Add services to the container.
             builder.Services
                 .AddDataLayer()
                 .AddBusinessLogicLayer();
+
+            builder.Services.AddMapster();
 
             builder.Services.AddControllers();
          
@@ -22,6 +35,7 @@ namespace CarService3.Host
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Car Service 2", Version = "v1" });
             });
+
 
             var app = builder.Build();
             // Configure the HTTP request pipeline.

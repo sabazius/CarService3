@@ -18,6 +18,8 @@ namespace CarService3.BL.Services
         {
             if (customer == null) return;
 
+            customer.Id = Guid.NewGuid();
+
             _customerRepository.Add(customer);
         }
 
@@ -26,12 +28,12 @@ namespace CarService3.BL.Services
             return _customerRepository.GetAll();
         }
 
-        public Customer? GetById(int id)
+        public Customer? GetById(Guid id)
         {
             return _customerRepository.GetById(id);
         }
 
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _customerRepository.Delete(id);
         }

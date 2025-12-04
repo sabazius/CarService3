@@ -1,6 +1,8 @@
 ﻿using CarService3.BL.Interfaces;
 using CarService3.Models.Entities;
-using Microsoft.AspNetCore.Http;
+using CarService3.Models.Requests;
+using MapsterMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService3.Host.Controllers
@@ -10,9 +12,17 @@ namespace CarService3.Host.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;
-        public CustomerController(ICustomerService customerService)
+        private readonly ILogger<CustomerController> _logger;
+        private readonly IMapper _mapper;
+
+        public CustomerController(
+            ICustomerService customerService,
+            ILogger<CustomerController> logger,
+            IMapper mapper)
         {
             _customerService = customerService;
+            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet(nameof(GetAllCustomers))]
@@ -20,11 +30,11 @@ namespace CarService3.Host.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public IActionResult GetAllCustomers()
         {
-            var customers = 
+            var customers =
                 _customerService.GetAll();
 
             if (customers?.Count == 0) return NoContent();
-            
+
             return Ok(customers);
         }
 
@@ -32,9 +42,9 @@ namespace CarService3.Host.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetCustomerById(int id)
+        public IActionResult GetCustomerById(Guid id)
         {
-            if (id <= 0)
+            if (id == Guid.Empty)
             {
                 return BadRequest("Id must be greater than zero.");
             }
@@ -50,12 +60,16 @@ namespace CarService3.Host.Controllers
         [HttpPost(nameof(AddCustomer))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult AddCustomer([FromBody] Customer? customer)
+        public IActionResult AddCustomer([FromBody] AddCustomerRequest? request)
         {
-            if (customer == null)
+            if (request == null)
             {
                 return BadRequest("Customer cannot be null.");
             }
+
+            var customer = _mapper.Map<Customer>(request);
+
+            if (customer == null) return BadRequest("Mapping failed.");
 
             _customerService.Add(customer);
 
@@ -65,9 +79,9 @@ namespace CarService3.Host.Controllers
         [HttpDelete(nameof(DeleteCustomer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult DeleteCustomer(int id)
+        public IActionResult DeleteCustomer(Guid id)
         {
-            if (id <= 0)
+            if (id == Guid.Empty)
             {
                 return BadRequest("Id must be greater than zero.");
             }

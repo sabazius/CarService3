@@ -10,6 +10,7 @@ namespace CarService3.DL
         {
             // Register DL services here
             services.AddSingleton<ICustomerRepository, CustomerStaticRepository>();
+            //services.AddSingleton<ICarRepository, CarStaticRepository>();
             return services;
         }
     }
