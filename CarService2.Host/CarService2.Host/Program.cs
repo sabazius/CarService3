@@ -24,7 +24,7 @@ namespace CarService3.Host
 
             // Add services to the container.
             builder.Services
-                .AddDataLayer()
+                .AddDataLayer(builder.Configuration)
                 .AddBusinessLogicLayer();
 
             builder.Services.AddMapster();

@@ -6,7 +6,7 @@ namespace CarService3.DL.Interfaces
     {
         void Add(Car? customer);
         List<Car> GetAll();
-        Car? GetById(int id);
-        void Delete(int id);
+        Car? GetById(Guid id);
+        void Delete(Guid id);
     }
 }
