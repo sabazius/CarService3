@@ -1,7 +1,10 @@
 using CarService3.BL;
 using CarService3.DL;
 using CarService3.DL.Interfaces;
+using CarService3.Host.Validators;
+using FluentValidation;
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -23,6 +26,9 @@ namespace CarService3.Host
             builder.Host.UseSerilog();
 
             // Add services to the container.
+            builder.Services
+                .AddValidatorsFromAssemblyContaining<AddCustomerValidator>();
+
             builder.Services
                 .AddDataLayer(builder.Configuration)
                 .AddBusinessLogicLayer();
