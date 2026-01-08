@@ -36,14 +36,14 @@ namespace CarService3.Host
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Car Service 2", Version = "v1" });
             });
 
+            builder.Services.AddHealthChecks();
 
             var app = builder.Build();
             // Configure the HTTP request pipeline.
 
-            //app.UseHttpsRedirection();
+            app.MapHealthChecks("/health");
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
