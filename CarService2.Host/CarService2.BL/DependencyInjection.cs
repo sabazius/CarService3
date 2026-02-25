@@ -11,7 +11,7 @@ namespace CarService3.BL
             // Register BL services here
             services.AddSingleton<ICustomerService, CustomerService>();
             services.AddSingleton<ICarService, CarService>();
-
+            services.AddSingleton<ISellCarService, SellCarService>();
             return services;
         }
     }
