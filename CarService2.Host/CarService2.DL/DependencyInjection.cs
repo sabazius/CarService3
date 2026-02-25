@@ -1,4 +1,5 @@
-﻿using CarService3.DL.Interfaces;
+﻿using CarService3.DL.Infrastructure;
+using CarService3.DL.Interfaces;
 using CarService3.DL.Repositories;
 using CarService3.Models.Configurations;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +26,11 @@ namespace CarService3.DL
             // Register DL services here
             services.AddSingleton<ICustomerRepository, CustomerRepository>();
             services.AddSingleton<ICarRepository, CarRepository>();
-            
+
+            //register hosted services here
+            services.AddHostedService<CarHostedService>();
+            services.AddHostedService<CarBackgroundService>();
+
             return services;
         }
     }

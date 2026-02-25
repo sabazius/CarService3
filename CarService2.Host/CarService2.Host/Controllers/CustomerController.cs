@@ -72,15 +72,15 @@ namespace CarService3.Host.Controllers
                 return BadRequest("Customer cannot be null.");
             }
 
-            var validationResult = 
+            var validationResult =
                 _validator.Validate(request);
-            
+
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
 
-                var customer = _mapper.Map<Customer>(request);
+            var customer = _mapper.Map<Customer>(request);
 
             if (customer == null) return BadRequest("Mapping failed.");
 
