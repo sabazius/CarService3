@@ -2,8 +2,10 @@ using CarService3.BL;
 using CarService3.DL;
 using CarService3.DL.Interfaces;
 using CarService3.Host.Validators;
+using CarService3.Models.Entities;
 using FluentValidation;
 using Mapster;
+using MessagePack;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -15,6 +17,25 @@ namespace CarService3.Host
     {
         public static void Main(string[] args)
         {
+            var mc = new Car()
+            {
+                Id = Guid.NewGuid(),
+                Model = "hoge",
+                Year = 2020,
+                BasePrice = 1000000
+            };
+           
+            // Call Serialize/Deserialize, that's all.
+            byte[] bytes = MessagePackSerializer.Serialize(mc);
+            Car mc2 = MessagePackSerializer.Deserialize<Car>(bytes);
+
+            // You can dump MessagePack binary blobs to human readable json.
+            // Using indexed keys (as opposed to string keys) will serialize to MessagePack arrays,
+            // hence property names are not available.
+            // [99,"hoge","huga"]
+            var json = MessagePackSerializer.ConvertToJson(bytes);
+            Console.WriteLine(json);
+
             var builder = WebApplication.CreateBuilder(args);
 
             Log.Logger = new LoggerConfiguration()
