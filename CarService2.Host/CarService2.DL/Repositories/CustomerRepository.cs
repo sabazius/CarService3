@@ -27,13 +27,13 @@ namespace CarService3.DL.Repositories
             _customersCollection = database.GetCollection<Customer>($"{nameof(Customer)}s");
         }
 
-        public void Add(Customer? customer)
+        public async Task Add(Customer? customer)
         {
             if (customer == null) return;
 
             try
             {
-                _customersCollection.InsertOneAsync(customer);
+                await _customersCollection.InsertOneAsync(customer);
             }
             catch (Exception e)
             {
@@ -42,19 +42,19 @@ namespace CarService3.DL.Repositories
 
         }
 
-        public List<Customer> GetAll()
+        public async Task<List<Customer>> GetAll()
         {
-            return _customersCollection.Find(_ => true).ToList();
+            return await _customersCollection.Find(_ => true).ToListAsync();
         }
 
-        public Customer? GetById(Guid id)
+        public async Task<Customer?> GetById(Guid id)
         {
             if (id == null || id == Guid.Empty) return default;
 
             try
             {
-                return _customersCollection.Find(c => c.Id == id)
-                    .FirstOrDefault();
+                return await _customersCollection.Find(c => c.Id == id)
+                    .FirstOrDefaultAsync();
             }
             catch (Exception e)
             {
@@ -65,15 +65,15 @@ namespace CarService3.DL.Repositories
 
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             if (id == null || id == Guid.Empty) return;
 
             try
             {
                 var result = 
-                    _customersCollection
-                        .DeleteOne(c => c.Id == id);
+                    await _customersCollection
+                        .DeleteOneAsync(c => c.Id == id);
 
                 if (result.DeletedCount == 0)
                 {
