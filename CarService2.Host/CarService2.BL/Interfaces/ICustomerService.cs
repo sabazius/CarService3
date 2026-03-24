@@ -4,9 +4,9 @@ namespace CarService3.BL.Interfaces
 {
     public interface ICustomerService
     {
-        void Add(Customer? customer);
-        List<Customer> GetAll();
-        Customer? GetById(Guid id);
-        void Delete(Guid id);
+        Task Add(Customer? customer);
+        Task<List<Customer>> GetAll();
+        Task<Customer?> GetById(Guid id);
+        Task Delete(Guid id);
     }
 }

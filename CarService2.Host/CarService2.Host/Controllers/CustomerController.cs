@@ -33,12 +33,11 @@ namespace CarService3.Host.Controllers
         [HttpGet(nameof(GetAllCustomers))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult GetAllCustomers()
+        public async Task<IActionResult> GetAllCustomers()
         {
-            var customers =
-                _customerService.GetAll();
+            var customers = await _customerService.GetAll();
 
-            if (customers?.Count == 0) return NoContent();
+            if (customers.Count == 0) return NoContent();
 
             return Ok(customers);
         }
@@ -47,15 +46,14 @@ namespace CarService3.Host.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetCustomerById(Guid id)
+        public async Task<IActionResult> GetCustomerById(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return BadRequest("Id must be greater than zero.");
             }
 
-            var customer =
-                _customerService.GetById(id);
+            var customer = await _customerService.GetById(id);
 
             if (customer == null) return NotFound();
 
@@ -65,15 +63,14 @@ namespace CarService3.Host.Controllers
         [HttpPost(nameof(AddCustomer))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult AddCustomer([FromBody] AddCustomerRequest? request)
+        public async Task<IActionResult> AddCustomer([FromBody] AddCustomerRequest? request)
         {
             if (request == null)
             {
                 return BadRequest("Customer cannot be null.");
             }
 
-            var validationResult =
-                _validator.Validate(request);
+            var validationResult = await _validator.ValidateAsync(request);
 
             if (!validationResult.IsValid)
             {
@@ -84,22 +81,22 @@ namespace CarService3.Host.Controllers
 
             if (customer == null) return BadRequest("Mapping failed.");
 
-            _customerService.Add(customer);
+            _ = _customerService.Add(customer);
 
-            return Ok();
+           return Ok();
         }
 
         [HttpDelete(nameof(DeleteCustomer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult DeleteCustomer(Guid id)
+        public async Task<IActionResult> DeleteCustomer(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return BadRequest("Id must be greater than zero.");
             }
 
-            _customerService.Delete(id);
+            await _customerService.Delete(id);
 
             return Ok();
         }

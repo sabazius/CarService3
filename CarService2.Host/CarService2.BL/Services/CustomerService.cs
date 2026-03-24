@@ -14,28 +14,28 @@ namespace CarService3.BL.Services
             _customerRepository = customerRepository;
         }
 
-        public void Add(Customer? customer)
+        public async Task Add(Customer? customer)
         {
             if (customer == null) return;
 
             customer.Id = Guid.NewGuid();
 
-            _customerRepository.Add(customer);
+            await _customerRepository.Add(customer);
         }
 
-        public List<Customer> GetAll()
+        public async Task<List<Customer>> GetAll()
         {
-            return _customerRepository.GetAll();
+           return await _customerRepository.GetAll();
         }
 
-        public Customer? GetById(Guid id)
+        public async Task<Customer?> GetById(Guid id)
         {
-            return _customerRepository.GetById(id);
+            return await _customerRepository.GetById(id);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _customerRepository.Delete(id);
+            await _customerRepository.Delete(id);
         }
     }
 }
