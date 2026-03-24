@@ -47,7 +47,7 @@ namespace CarService3.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(18500, result.SalePrice);
+            Assert.Equal(18500, result.Result.SalePrice);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace CarService3.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(0, result.SalePrice);
+            Assert.Equal(0, result.Result.SalePrice);
         }
     }
 }
