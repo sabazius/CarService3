@@ -6,7 +6,7 @@ namespace CarService3.BL.Interfaces
     {
         void Add(Car? customer);
         List<Car> GetAll();
-        Car? GetById(Guid id);
+        Task<Car?> GetById(Guid id);
         void Delete(Guid id);
     }
 }

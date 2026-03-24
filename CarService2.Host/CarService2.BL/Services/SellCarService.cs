@@ -15,10 +15,10 @@ namespace CarService3.BL.Services
             _carRepository = carRepository;
         }
 
-        public SellCarResult? SellCar(Guid customerId, Guid carId)
+        public async Task<SellCarResult?> SellCar(Guid customerId, Guid carId)
         {
-            var customer = _customerService.GetById(customerId);
-            var car = _carRepository.GetById(carId);
+            var customer = await _customerService.GetById(customerId);
+            var car = await _carRepository.GetById(carId);
 
             if (customer == null || car == null)
             {

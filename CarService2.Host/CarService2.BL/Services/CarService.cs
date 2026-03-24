@@ -28,9 +28,9 @@ namespace CarService3.BL.Services
             return _carRepository.GetAll();
         }
 
-        public Car? GetById(Guid id)
+        public async Task<Car?> GetById(Guid id)
         {
-            return _carRepository.GetById(id);
+            return await _carRepository.GetById(id);
         }
 
         public void Delete(Guid id)

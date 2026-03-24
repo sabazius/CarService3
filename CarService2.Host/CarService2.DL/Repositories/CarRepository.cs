@@ -27,13 +27,13 @@ namespace CarService3.DL.Repositories
             _carsCollection = database.GetCollection<Car>($"{nameof(Car)}s");
         }
 
-        public void Add(Car? customer)
+        public async Task Add(Car? customer)
         {
             if (customer == null) return;
 
             try
             {
-                _carsCollection.InsertOneAsync(customer);
+                await _carsCollection.InsertOneAsync(customer);
             }
             catch (Exception e)
             {
@@ -47,14 +47,14 @@ namespace CarService3.DL.Repositories
             return _carsCollection.Find(_ => true).ToList();
         }
 
-        public Car GetById(Guid id)
+        public async Task<Car?> GetById(Guid id)
         {
             if (id == null || id == Guid.Empty) return default;
 
             try
             {
-                return _carsCollection.Find(c => c.Id == id)
-                    .FirstOrDefault();
+                return await _carsCollection.Find(c => c.Id == id)
+                    .FirstOrDefaultAsync();
             }
             catch (Exception e)
             {
