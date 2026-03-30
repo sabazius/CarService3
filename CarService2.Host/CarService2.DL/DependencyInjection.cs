@@ -24,13 +24,8 @@ namespace CarService3.DL
                     nameof(MongoDbConfiguration)));
 
             // Register DL services here
-            services.AddSingleton<ICustomerRepository, CustomerRepository>();
-            services.AddSingleton<ICarRepository, CarRepository>();
-
-            //register hosted services here
-            services.AddHostedService<CarHostedService>();
-            services.AddHostedService<CarBackgroundService>();
-
+            services.AddSingleton<ICustomerRepository, CustomerStaticRepository>();
+            services.AddSingleton<ICarRepository, CarStaticRepository>();
             return services;
         }
     }
