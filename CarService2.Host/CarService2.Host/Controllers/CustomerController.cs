@@ -1,6 +1,10 @@
 ﻿using CarService3.BL.Interfaces;
+using CarService3.Host.Validators;
 using CarService3.Models.Entities;
-using Microsoft.AspNetCore.Http;
+using CarService3.Models.Requests;
+using FluentValidation;
+using MapsterMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService3.Host.Controllers
@@ -10,21 +14,31 @@ namespace CarService3.Host.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;
-        public CustomerController(ICustomerService customerService)
+        private readonly ILogger<CustomerController> _logger;
+        private readonly IMapper _mapper;
+        private readonly IValidator<AddCustomerRequest> _validator;
+
+        public CustomerController(
+            ICustomerService customerService,
+            ILogger<CustomerController> logger,
+            IMapper mapper,
+            IValidator<AddCustomerRequest> validator)
         {
             _customerService = customerService;
+            _logger = logger;
+            _mapper = mapper;
+            _validator = validator;
         }
 
         [HttpGet(nameof(GetAllCustomers))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult GetAllCustomers()
+        public async Task<IActionResult> GetAllCustomers()
         {
-            var customers = 
-                _customerService.GetAll();
+            var customers = await _customerService.GetAll();
 
-            if (customers?.Count == 0) return NoContent();
-            
+            if (customers.Count == 0) return NoContent();
+
             return Ok(customers);
         }
 
@@ -32,15 +46,14 @@ namespace CarService3.Host.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetCustomerById(int id)
+        public async Task<IActionResult> GetCustomerById(Guid id)
         {
-            if (id <= 0)
+            if (id == Guid.Empty)
             {
                 return BadRequest("Id must be greater than zero.");
             }
 
-            var customer =
-                _customerService.GetById(id);
+            var customer = await _customerService.GetById(id);
 
             if (customer == null) return NotFound();
 
@@ -50,29 +63,40 @@ namespace CarService3.Host.Controllers
         [HttpPost(nameof(AddCustomer))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult AddCustomer([FromBody] Customer? customer)
+        public async Task<IActionResult> AddCustomer([FromBody] AddCustomerRequest? request)
         {
-            if (customer == null)
+            if (request == null)
             {
                 return BadRequest("Customer cannot be null.");
             }
 
-            _customerService.Add(customer);
+            var validationResult = await _validator.ValidateAsync(request);
 
-            return Ok();
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var customer = _mapper.Map<Customer>(request);
+
+            if (customer == null) return BadRequest("Mapping failed.");
+
+            _ = _customerService.Add(customer);
+
+           return Ok();
         }
 
         [HttpDelete(nameof(DeleteCustomer))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult DeleteCustomer(int id)
+        public async Task<IActionResult> DeleteCustomer(Guid id)
         {
-            if (id <= 0)
+            if (id == Guid.Empty)
             {
                 return BadRequest("Id must be greater than zero.");
             }
 
-            _customerService.Delete(id);
+            await _customerService.Delete(id);
 
             return Ok();
         }
