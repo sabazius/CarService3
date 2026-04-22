@@ -1,9 +1,15 @@
+using Confluent.Kafka;
+using KafkaChat.Serialization;
+using MessagePack;
+
+namespace KafkaChat
+{
     // Модел на съобщението
     [MessagePackObject]
     public class ChatMessage
     {
         [Key(0)]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [Key(1)]
         public string Sender { get; set; }
@@ -16,7 +22,7 @@
 
         public ChatMessage() { }
 
-        public ChatMessage(Guid id, string sender, string text, DateTime timestamp)
+        public ChatMessage(string id, string sender, string text, DateTime timestamp)
         {
             Id = id;
             Sender = sender;
@@ -28,8 +34,7 @@
     class Program
     {
         private static string _nickname = string.Empty;
-        private const string Topic = "chat-room-1";
-        private const string BootstrapServers = "localhost:9092"; // Вашата конфигурация
+        private const string Topic = "pu-chat";
 
         static async Task Main(string[] args)
         {
@@ -55,19 +60,27 @@
         // --- PRODUCER (Изпращане) ---
         static async Task StartProducer()
         {
-            var config = new ProducerConfig { BootstrapServers = BootstrapServers };
+            var config = new ProducerConfig 
+            {
+                BootstrapServers = "kafka-210718-0.cloudclusters.net:10020",
+                SecurityProtocol = SecurityProtocol.SaslSsl,
+                SaslMechanism = SaslMechanism.ScramSha256,
+                SaslUsername = "puchat",
+                SaslPassword = "1234567q",
+                EnableSslCertificateVerification = false
+            };
 
-            using var producer = new ProducerBuilder<Guid, byte[]>(config).Build();
+            using var producer = new ProducerBuilder<string, byte[]>(config).Build();
 
             while (true)
             {
                 string input = Console.ReadLine() ?? "";
                 if (string.IsNullOrWhiteSpace(input)) continue;
 
-                var msg = new ChatMessage(Guid.NewGuid(),_nickname, input, DateTime.Now);
+                var msg = new ChatMessage(Guid.NewGuid().ToString(),_nickname, input, DateTime.Now);
                 byte[] serializedMsg = MessagePackSerializer.Serialize(msg);
 
-                await producer.ProduceAsync(Topic, new Message<Guid, byte[]> { Value = serializedMsg });
+                await producer.ProduceAsync(Topic, new Message<string, byte[]> { Value = serializedMsg });
             }
         }
 
@@ -76,12 +89,17 @@
         {
             var config = new ConsumerConfig
             {
-                BootstrapServers = BootstrapServers,
-                GroupId = $"chat-group-{Guid.NewGuid()}", // Уникална група за всеки инстанс
-                AutoOffsetReset = AutoOffsetReset.Latest
+                BootstrapServers = "kafka-210718-0.cloudclusters.net:10020",
+                GroupId = $"KafkaChat{Guid.NewGuid}",
+                AutoOffsetReset = AutoOffsetReset.Latest,
+                SecurityProtocol = SecurityProtocol.SaslSsl,
+                SaslMechanism = SaslMechanism.ScramSha256,
+                SaslUsername = "puchat",
+                SaslPassword = "1234567q",
+                EnableSslCertificateVerification = false
             };
 
-            using var consumer = new ConsumerBuilder<Guid, byte[]>(config).Build();
+            using var consumer = new ConsumerBuilder<string, byte[]>(config).Build();
             consumer.Subscribe(Topic);
 
             try
